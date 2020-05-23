@@ -2,10 +2,12 @@ from datetime import datetime
 from datetime import timedelta
 from compose.utils import json_decoder
 
-import sys
-sys.path.append("pydevd-pycharm.egg")
-import pydevd_pycharm
-pydevd_pycharm.settrace('localhost', port=5678, stdoutToServer=True, stderrToServer=True)
+# import sys
+#
+# sys.path.append("pydevd-pycharm.egg")
+# import pydevd_pycharm
+#
+# pydevd_pycharm.settrace('localhost', port=5678, stdoutToServer=True, stderrToServer=True)
 
 import xbmc
 import xbmcaddon
@@ -15,7 +17,6 @@ import xbmcplugin
 import google_auth_oauthlib.flow
 import googleapiclient.discovery
 import googleapiclient.errors
-import isodate
 import os
 import json
 # import config

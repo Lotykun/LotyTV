@@ -1,0 +1,90 @@
+# Kodi Media Center language file
+# Addon Name: LotyChannel
+# Addon id: script.loty.channel
+msgid ""
+msgstr ""
+"Project-Id-Version: XBMC-Addons\n"
+"Report-Msgid-Bugs-To: alanwww1@xbmc.org\n"
+"POT-Creation-Date: 2020-01-01 21:01+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: lotykun\n"
+"Language-Team: LANGUAGE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: es_GB\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+
+# Kodion Settings
+
+msgctxt "#32000"
+msgid "General"
+msgstr "General"
+
+msgctxt "#32001"
+msgid "Youtube"
+msgstr "Youtube"
+
+msgctxt "#32002"
+msgid "Enable YouTube Mode"
+msgstr "Enable YouTube Mode"
+
+msgctxt "#32003"
+msgid "Youtube Api Service Name"
+msgstr "Youtube Api Service Name"
+
+msgctxt "#32004"
+msgid "Youtube Api Version"
+msgstr "Youtube Api Version"
+
+msgctxt "#32005"
+msgid "Youtube Api Key"
+msgstr "Youtube Api Key"
+
+msgctxt "#32006"
+msgid "Youtube Channels Name"
+msgstr "Youtube Channels Name"
+
+msgctxt "#32007"
+msgid "Youtube Search Terms"
+msgstr "Youtube Search Terms"
+
+msgctxt "#32008"
+msgid "Youtube Default Max Results"
+msgstr "Youtube Default Max Results"
+
+msgctxt "#32009"
+msgid "Movies"
+msgstr "Movies"
+
+msgctxt "#32010"
+msgid "Enable Movies Mode"
+msgstr "Enable Movies Mode"
+
+msgctxt "#32011"
+msgid "Movies Genre"
+msgstr "Movies Genre"
+
+msgctxt "#32012"
+msgid "Movies PlayList"
+msgstr "Movies PlayList"
+
+msgctxt "#32013"
+msgid "TV Shows"
+msgstr "TV Shows"
+
+msgctxt "#32014"
+msgid "Enable TV Shows Mode"
+msgstr "Enable TV Shows Mode"
+
+msgctxt "#32015"
+msgid "TV Shows Genre"
+msgstr "TV Shows Genre"
+
+msgctxt "#32016"
+msgid "TV Shows PlayList"
+msgstr "TV Shows PlayList"
+
+msgctxt "#32017"
+msgid "TV Shows Names"
+msgstr "TV Shows Names"
