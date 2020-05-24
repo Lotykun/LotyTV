@@ -2,13 +2,6 @@ from datetime import datetime
 from datetime import timedelta
 from compose.utils import json_decoder
 
-# import sys
-#
-# sys.path.append("pydevd-pycharm.egg")
-# import pydevd_pycharm
-#
-# pydevd_pycharm.settrace('localhost', port=5678, stdoutToServer=True, stderrToServer=True)
-
 import xbmc
 import xbmcaddon
 import xbmcgui
@@ -550,18 +543,18 @@ if __name__ == '__main__':
         publishedAfter = datetime.now() + interval
         youTubeVideos = []
 
-        if not channelsSetting:
+        if channelsSetting is not None and channelsSetting != '':
             channels = channelsSetting.split(',')
             for channel in channels:
                 channelId = get_channelId_by_channelName(channel)
                 youTubeVideos.extend(
                     get_videos_youtube(maxResults=maxResultsSetting, order="date", publishedAfter=publishedAfter,
                                        channelId=channelId))
-        elif searchSetting is not None:
+        elif searchSetting is not None and channelsSetting != '':
             youTubeVideos = get_videos_youtube(maxResults=maxResultsSetting, order="date",
                                                publishedAfter=publishedAfter, search=searchSetting)
-
-        playList = add_items_playList(playList, youTubeVideos)
+        if youTubeVideos:
+            playList = add_items_playList(playList, youTubeVideos)
 
     elif mode_movies == 'true':
         xbmc.executebuiltin("PlayerControl(repeatall)")
@@ -578,12 +571,12 @@ if __name__ == '__main__':
             movies = get_xbmc_tvshows(tvGenreSetting)
         elif tvNamesSetting.strip():
             shows = tvNamesSetting.split(',')
-            seasons = range(1, 3);
+            seasons = range(1, 3)
             indexStart = 3
             seasonEmpty = True
             for season in seasons:
 
-                seasonShowsEpisodes = [];
+                seasonShowsEpisodes = []
                 for show in shows:
                     tvshows = get_xbmc_tvshows(name=show)
                     tvshowsSeason = get_xbmc_tvshowseasons(tvshowid=tvshows[0]['tvshowid'], indexStart=season - 1,
