@@ -1,6 +1,7 @@
 from datetime import datetime
 from datetime import timedelta
 from compose.utils import json_decoder
+from urlparse import urlparse
 
 import xbmc
 import xbmcaddon
@@ -15,6 +16,7 @@ import json
 # import config
 import sys
 import time
+import socket
 
 __addon__ = xbmcaddon.Addon()
 __addonname__ = __addon__.getAddonInfo('name')
@@ -323,86 +325,23 @@ def get_player_item(playerId):
             "properties": [
                 "title",
                 "artist",
-                "albumartist",
                 "genre",
                 "year",
                 "rating",
-                "album",
-                "track",
                 "duration",
-                "comment",
-                "lyrics",
-                "musicbrainztrackid",
-                "musicbrainzartistid",
-                "musicbrainzalbumid",
-                "musicbrainzalbumartistid",
                 "playcount",
                 "fanart",
-                "director",
-                "trailer",
-                "tagline",
-                "plot",
-                "plotoutline",
                 "originaltitle",
                 "lastplayed",
-                "writer",
-                "studio",
-                "mpaa",
-                "cast",
-                "country",
-                "imdbnumber",
-                "premiered",
-                "productioncode",
-                "runtime",
-                "set",
-                "showlink",
                 "streamdetails",
-                "top250",
-                "votes",
-                "firstaired",
-                "season",
-                "episode",
-                "showtitle",
                 "thumbnail",
                 "file",
                 "resume",
-                "artistid",
-                "albumid",
-                "tvshowid",
-                "setid",
-                "watchedepisodes",
-                "disc",
-                "tag",
                 "art",
-                "genreid",
-                "displayartist",
-                "albumartistid",
                 "description",
-                "theme",
-                "mood",
-                "style",
-                "albumlabel",
-                "sorttitle",
-                "episodeguide",
                 "uniqueid",
-                "dateadded",
-                "channel",
-                "channeltype",
-                "hidden",
-                "locked",
-                "channelnumber",
                 "starttime",
                 "endtime",
-                "specialsortseason",
-                "specialsortepisode",
-                "compilation",
-                "releasetype",
-                "albumreleasetype",
-                "contributors",
-                "displaycomposer",
-                "displayconductor",
-                "displayorchestra",
-                "displaylyricist",
                 "userrating"
             ]
         }
@@ -509,31 +448,94 @@ def get_item_url(item):
     return url
 
 
+def check_connection_media_source():
+    media_sources = get_xbmc_mediasources()
+    for media_source in media_sources:
+        url_parsed = urlparse(media_source["file"])
+        ip = url_parsed.netloc
+        port = 22
+        xbmc.log("testing...: " + ip, level=xbmc.LOGNOTICE)
+        if is_open(ip, port):
+            xbmc.log("HOST IS UP: " + ip, level=xbmc.LOGNOTICE)
+            ipup = True
+        else:
+            xbmc.log("not connect", level=xbmc.LOGNOTICE)
+            ipup = False
+            break
+    return ipup
+
+
+def is_open(ip, port):
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.settimeout(3)
+    try:
+        # s.connect((ip, int(port)))
+        s.connect(("192.168.1.40", int(port)))
+        s.shutdown(socket.SHUT_RDWR)
+        return True
+    except:
+        return False
+    finally:
+        s.close()
+
+
 class Widgets_Player(xbmc.Player):
     def __init__(self):
         xbmc.Player.__init__(self)
 
     def onPlayBackStarted(self):
-        if mode_youtube:
+        xbmc.log("OnPlayback Start! %s" % time.time(), level=xbmc.LOGNOTICE)
+        if mode_youtube == 'true':
             playlist_position = xbmc.PlayList(xbmc.PLAYLIST_VIDEO).getposition()
             playlist_size = xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size()
-            if (playlist_position == playlist_size - 1):
+            xbmc.log("PLAYLIST POSITION: " + str(playlist_position), level=xbmc.LOGNOTICE)
+            xbmc.log("PLAYLIST SIZE: " + str(playlist_size), level=xbmc.LOGNOTICE)
+            if playlist_position == playlist_size - 1:
+                xbmc.sleep(3000)
+                interval = timedelta(days=-7)
+                publishedAfter = datetime.now() + interval
                 players = get_active_players()
                 for player in players:
-                    if (player['type'] == 'video'):
+                    if player['type'] == 'video':
                         currentItem = get_player_item(player['playerid'])
                 currentVideoId = currentItem['file'].split('video_id=')[1]
-                videos = get_videos_youtube(maxResults=1, order="date", publishedAfter=publishedAfter,
+                videos = get_videos_youtube(maxResults=maxResultsSetting, order="date", publishedAfter=publishedAfter,
                                             related=currentVideoId)
                 for video in videos:
                     url = get_item_url(video)
                     xbmc.PlayList(xbmc.PLAYLIST_VIDEO).add(url)
 
+    def onPlayBackStopped(self):
+        xbmc.log("OnPlayback Stop! %s" % time.time(), level=xbmc.LOGNOTICE)
+        if mode_movies == 'true' or mode_tvshows == 'true':
+            playlist_position = xbmc.PlayList(xbmc.PLAYLIST_VIDEO).getposition()
+            playlist_size = xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size()
+            xbmc.log("PLAYLIST POSITION: " + str(playlist_position), level=xbmc.LOGNOTICE)
+            xbmc.log("PLAYLIST SIZE: " + str(playlist_size), level=xbmc.LOGNOTICE)
+            window.show()
+            if check_connection_media_source():
+                window.close()
+            else:
+                for i in range(300):
+                    if check_connection_media_source():
+                        window.close()
+                        break
+                    else:
+                        xbmc.sleep(3000)
+                xbmc.Player().play(playList, startpos=playlist_position)
+
+    def onPlayBackError(self):
+        xbmc.log("OnPlayback Error! %s" % time.time(), level=xbmc.LOGNOTICE)
+
     def onPlayBackEnded(self):
-        xbmc.log("LOTY IS HERE OnPlayback Stop! %s" % time.time(), level=xbmc.LOGNOTICE)
+        xbmc.log("OnPlayback Ended! %s" % time.time(), level=xbmc.LOGNOTICE)
 
 
 player = Widgets_Player()
+no_signal = xbmcgui.ControlImage(0, 0, 1280, 720,
+                                 "/home/jlotito/.kodi/addons/script.screensaver.example/resources/skins/default/media/pacific_rim.jpg")
+window = xbmcgui.WindowDialog()
+window.addControl(no_signal)
 if __name__ == '__main__':
     xbmc.executebuiltin("Playlist.Clear")
     playList = create_local_playList()
@@ -557,6 +559,13 @@ if __name__ == '__main__':
             playList = add_items_playList(playList, youTubeVideos)
 
     elif mode_movies == 'true':
+        window.show()
+        for i in range(300):
+            if check_connection_media_source():
+                window.close()
+                break
+            else:
+                xbmc.sleep(3000)
         xbmc.executebuiltin("PlayerControl(repeatall)")
         if not moviePlaylistSetting:
             movies = get_xbmc_movies("Drama")
@@ -567,6 +576,13 @@ if __name__ == '__main__':
             playList = add_item_playList(playList, movie)
 
     elif mode_tvshows == 'true':
+        window.show()
+        for i in range(300):
+            if check_connection_media_source():
+                window.close()
+                break
+            else:
+                xbmc.sleep(3000)
         if tvPlaylistSetting.strip():
             movies = get_xbmc_tvshows(tvGenreSetting)
         elif tvNamesSetting.strip():
@@ -621,4 +637,3 @@ if __name__ == '__main__':
             break
         xbmc.sleep(500)
 
-    # xbmc.executebuiltin( "ShowPicture(/home/jlotito/no-signal.gif)" )
