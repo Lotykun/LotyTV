@@ -21,6 +21,7 @@ import socket
 __addon__ = xbmcaddon.Addon()
 __addonname__ = __addon__.getAddonInfo('name')
 __icon__ = __addon__.getAddonInfo('icon')
+__path__ = __addon__.getAddonInfo('path')
 
 mode_youtube = __addon__.getSetting(id='youtube-enable')
 mode_movies = __addon__.getSetting(id='movies-enable')
@@ -518,6 +519,7 @@ class Widgets_Player(xbmc.Player):
             else:
                 for i in range(300):
                     if check_connection_media_source():
+                        xbmc.sleep(3000)
                         window.close()
                         break
                     else:
@@ -532,8 +534,7 @@ class Widgets_Player(xbmc.Player):
 
 
 player = Widgets_Player()
-no_signal = xbmcgui.ControlImage(0, 0, 1280, 720,
-                                 "/home/jlotito/.kodi/addons/script.screensaver.example/resources/skins/default/media/pacific_rim.jpg")
+no_signal = xbmcgui.ControlImage(0, 0, 1280, 720, __path__ + "/resources/no-signal-tv-screen.jpg")
 window = xbmcgui.WindowDialog()
 window.addControl(no_signal)
 if __name__ == '__main__':
